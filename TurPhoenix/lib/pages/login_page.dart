@@ -1,5 +1,9 @@
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:turphoenix/models/user.dart';
 import 'package:turphoenix/pages/register_page.dart';
 import 'package:flutter/material.dart';
+import 'home_page.dart';
 
 
 class LoginPage extends StatefulWidget {
@@ -12,6 +16,42 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final _correo = TextEditingController();
   final _contra = TextEditingController();
+
+  User userLoad = User.Empty();
+
+  @override
+  void initState(){
+    _getUser();
+    super.initState();
+  }
+
+  _getUser() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    Map<String, dynamic> userMap = jsonDecode(prefs.getString("user").toString());
+    userLoad = User.fromJson(userMap);
+  }
+
+  void _showMsg(String msg) {
+    final scaffold = ScaffoldMessenger.of(context);
+    scaffold.showSnackBar(
+      SnackBar(
+        content: Text(msg),
+        action: SnackBarAction(
+            label: 'Aceptar', onPressed: scaffold.hideCurrentSnackBar),
+      ),
+    );
+  }
+
+  void _validarUsuario() {
+    print(userLoad.correo);
+    print(userLoad.contra);
+    if (_correo.text == userLoad.correo && _contra.text == userLoad.contra) {
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (context) => const HomePage()));
+    } else {
+      _showMsg("Correo o contraseña incorrecta");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +84,9 @@ class _LoginPageState extends State<LoginPage> {
                   height: 16.0,
                 ),
                 ElevatedButton(
-                    onPressed: () {}, child: const Text('Iniciar sesión')),
+                    onPressed: () {
+                      _validarUsuario();
+                    }, child: const Text('Iniciar sesión')),
                 TextButton(
                   style: TextButton.styleFrom(
                       textStyle: const TextStyle(
@@ -56,7 +98,7 @@ class _LoginPageState extends State<LoginPage> {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => RegisterPage()));
+                            builder: (context) => const RegisterPage()));
                   },
                   child: const Text('Registrarse'),
                 ),

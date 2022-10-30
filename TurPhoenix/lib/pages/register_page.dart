@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import '../models/user.dart';
+import 'login_page.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({Key? key}) : super(key: key);
@@ -64,6 +66,11 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
+  void saveUser(User user) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString("user", jsonEncode(user));
+  }
+
   void _onRegistrerButtonClicked() {
     setState(() {
       if (_contra.text == _repContra.text) {
@@ -80,6 +87,8 @@ class _RegisterPageState extends State<RegisterPage> {
 
         var user = User(
             _nombre.text, _correo.text, _contra.text, genero, destinos, _fecha);
+        saveUser(user);
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const LoginPage()));
       } else {
         _showMsg("Las contraseñas deben de ser iguales");
       }
