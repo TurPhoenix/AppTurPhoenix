@@ -43,8 +43,6 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void _validarUsuario() {
-    print(userLoad.correo);
-    print(userLoad.contra);
     if (_correo.text == userLoad.correo && _contra.text == userLoad.contra) {
       Navigator.pushReplacement(
           context, MaterialPageRoute(builder: (context) => const HomePage()));
